@@ -22,11 +22,11 @@ func (h *UserHandler) login(c echo.Context) error {
 		return echo.NewHTTPError(400, err)
 	}
 
-	cookie := new(http.Cookie)
-	cookie.Name = "username"
-	cookie.Value = req.Username
+	cookie := &http.Cookie{
+		Name:  "username",
+		Value: req.Username,
+	}
 
 	c.SetCookie(cookie)
-	hello := components.Hello("Maaario")
-	return hello.Render(c.Request().Context(), c.Response().Writer)
+	return components.Home().Render(c.Request().Context(), c.Response().Writer)
 }

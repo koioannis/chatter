@@ -5,14 +5,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type HomeHandler struct{}
+type IndexHandler struct{}
 
-func RegisterHomeHandler(e *echo.Echo) {
-	h := &HomeHandler{}
+func RegisterIndexHandler(e *echo.Echo) {
+	h := &IndexHandler{}
 	e.GET("/", h.get)
 }
 
-func (h *HomeHandler) get(c echo.Context) error {
+func (h *IndexHandler) get(c echo.Context) error {
 	_, err := c.Cookie("username")
 	isLoggedIn := true
 	if err != nil {

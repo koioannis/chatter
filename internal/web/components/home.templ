@@ -1,5 +1,221 @@
 package components
 
-templ Hello(name string) {
-	<div>Hello, my name is mario, do I work though? { name }</div>
+import "github.com/koioannis/chatter/internal/app/chat"
+import "fmt"
+import "math/rand"
+import "time"
+
+var placeholderIconColors = []string{
+	"ADD8E6", // Soft Blue
+	"B2F2BB", // Pastel Green
+	"E6E6FA", // Lavender
+	"FFE5B4", // Peach
+	"87CEEB", // Sky Blue
+	"98FF98", // Mint Green
+	"FADADD", // Powder Pink
+	"D3D3D3", // Light Grey
+}
+
+func getRandomColor(colors []string) string {
+	rand.Seed(time.Now().UnixNano())
+	index := rand.Intn(len(colors))
+	return colors[index]
+}
+
+func firstTwoLetters(s string) string {
+	if len(s) == 0 {
+		return ""
+	}
+	runes := []rune(s)
+	if len(runes) >= 2 {
+		return string(runes[:2])
+	}
+	return string(runes)
+}
+
+func getRandomPlaceholderUrl(channelName string) string {
+	return fmt.Sprintf("https://placehold.co/200x/%s/ffffff.svg?text=%s&font=Lato", getRandomColor(placeholderIconColors), firstTwoLetters(channelName))
+}
+
+templ Room(room *chat.Room) {
+	<div class="flex items-center mb-4 cursor-pointer hover:bg-gray-100 p-2 rounded-md">
+		<div class="w-12 h-12 bg-gray-300 rounded-full mr-3">
+			<img src={ getRandomPlaceholderUrl(room.Name) } alt="User Avatar" class="w-12 h-12 rounded-full"/>
+		</div>
+		<div class="flex-1">
+			<h2 class="text-lg font-semibold">{ room.Name }</h2>
+			<p class="text-gray-600">Todo</p>
+		</div>
+	</div>
+}
+
+templ Rooms(rooms []*chat.Room) {
+	<div id="rooms" class="overflow-y-auto h-screen">
+		for _, room := range rooms {
+			@Room(room)
+		}
+	</div>
+}
+
+templ AddRoomModal() {
+	<div id="modal" class="z-10 w-56 p-3 bg-white rounded-lg shadow bg-gray-700 absolute right-0 top-10">
+		<form hx-post="/room" hx-target="#rooms" hx-swap="afterbegin" method="post">
+			<input type="text" name="name" placeholder="Enter Room name" class="text-black w-full p-2 rounded-md border border-gray-400 focus:outline-none focus:border-blue-500"/>
+			<div class="flex space-x-5 mt-2 space-between">
+				<button
+					type="submit"
+					class="p-2 bg-blue-500 grow rounded-md border border-gray-400 focus:outline-none focus:border-blue-500"
+				>
+					Add
+				</button>
+				<button
+					_="on click remove #modal"
+					type="button"
+					class="p-2 bg-red-500 rounded-md border border-gray-400 focus:outline-none focus:border-blue-500"
+				>Close</button>
+			</div>
+		</form>
+	</div>
+}
+
+templ Home() {
+	<!-- component -->
+	<div class="flex h-screen overflow-hidden">
+		<!-- Sidebar -->
+		<div class="w-1/4 bg-white border-r border-gray-300">
+			<!-- Sidebar Header -->
+			<header class="p-4 border-b border-gray-300 flex justify-between items-center bg-indigo-600 text-white">
+				<h1 class="text-2xl font-semibold">Chatter</h1>
+				<div class="relative">
+					<button
+						class="text-xl"
+						id="showButton"
+						hx-get="/create-room"
+						hx-target="#modals-here"
+						hx-swap="innerHTML"
+						class="uk-button uk-button-primary"
+						_="on htmx:afterOnLoad wait 10ms then add .uk-open to #modal"
+					>+</button>
+					<div id="modals-here"></div>
+				</div>
+			</header>
+			<div hx-trigger="load" hx-get="/room" hx-swap="outerHTML"></div>
+		</div>
+		<!-- Main Chat Area -->
+		<div class="flex-1">
+			<!-- Chat Header -->
+			<header class="bg-white p-4 text-gray-700">
+				<h1 class="text-2xl font-semibold">Alice</h1>
+			</header>
+			<!-- Chat Messages -->
+			<div class="h-screen overflow-y-auto p-4 pb-36">
+				<!-- Incoming Message -->
+				<div class="flex mb-4 cursor-pointer">
+					<div class="w-9 h-9 rounded-full flex items-center justify-center mr-2">
+						<img src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="User Avatar" class="w-8 h-8 rounded-full"/>
+					</div>
+					<div class="flex max-w-96 bg-white rounded-lg p-3 gap-3">
+						<p class="text-gray-700">Hey Bob, how's it going?</p>
+					</div>
+				</div>
+				<!-- Outgoing Message -->
+				<div class="flex justify-end mb-4 cursor-pointer">
+					<div class="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
+						<p>Hi Alice! I'm good, just finished a great book. How about you?</p>
+					</div>
+					<div class="w-9 h-9 rounded-full flex items-center justify-center ml-2">
+						<img src="https://placehold.co/200x/b7a8ff/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="My Avatar" class="w-8 h-8 rounded-full"/>
+					</div>
+				</div>
+				<!-- Incoming Message -->
+				<div class="flex mb-4 cursor-pointer">
+					<div class="w-9 h-9 rounded-full flex items-center justify-center mr-2">
+						<img src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="User Avatar" class="w-8 h-8 rounded-full"/>
+					</div>
+					<div class="flex max-w-96 bg-white rounded-lg p-3 gap-3">
+						<p class="text-gray-700">That book sounds interesting! What's it about?</p>
+					</div>
+				</div>
+				<!-- Outgoing Message -->
+				<div class="flex justify-end mb-4 cursor-pointer">
+					<div class="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
+						<p>It's about an astronaut stranded on Mars, trying to survive. Gripping stuff!</p>
+					</div>
+					<div class="w-9 h-9 rounded-full flex items-center justify-center ml-2">
+						<img src="https://placehold.co/200x/b7a8ff/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="My Avatar" class="w-8 h-8 rounded-full"/>
+					</div>
+				</div>
+				<!-- Incoming Message -->
+				<div class="flex mb-4 cursor-pointer">
+					<div class="w-9 h-9 rounded-full flex items-center justify-center mr-2">
+						<img src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="User Avatar" class="w-8 h-8 rounded-full"/>
+					</div>
+					<div class="flex max-w-96 bg-white rounded-lg p-3 gap-3">
+						<p class="text-gray-700">I'm intrigued! Maybe I'll borrow it from you when you're done?</p>
+					</div>
+				</div>
+				<!-- Outgoing Message -->
+				<div class="flex justify-end mb-4 cursor-pointer">
+					<div class="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
+						<p>Of course! I'll drop it off at your place tomorrow.</p>
+					</div>
+					<div class="w-9 h-9 rounded-full flex items-center justify-center ml-2">
+						<img src="https://placehold.co/200x/b7a8ff/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="My Avatar" class="w-8 h-8 rounded-full"/>
+					</div>
+				</div>
+				<!-- Incoming Message -->
+				<div class="flex mb-4 cursor-pointer">
+					<div class="w-9 h-9 rounded-full flex items-center justify-center mr-2">
+						<img src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="User Avatar" class="w-8 h-8 rounded-full"/>
+					</div>
+					<div class="flex max-w-96 bg-white rounded-lg p-3 gap-3">
+						<p class="text-gray-700">Thanks, you're the best!</p>
+					</div>
+				</div>
+				<!-- Outgoing Message -->
+				<div class="flex justify-end mb-4 cursor-pointer">
+					<div class="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
+						<p>Anytime! Let me know how you like it. 😊</p>
+					</div>
+					<div class="w-9 h-9 rounded-full flex items-center justify-center ml-2">
+						<img src="https://placehold.co/200x/b7a8ff/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="My Avatar" class="w-8 h-8 rounded-full"/>
+					</div>
+				</div>
+				<!-- Incoming Message -->
+				<div class="flex mb-4 cursor-pointer">
+					<div class="w-9 h-9 rounded-full flex items-center justify-center mr-2">
+						<img src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="User Avatar" class="w-8 h-8 rounded-full"/>
+					</div>
+					<div class="flex max-w-96 bg-white rounded-lg p-3 gap-3">
+						<p class="text-gray-700">So, pizza next week, right?</p>
+					</div>
+				</div>
+				<!-- Outgoing Message -->
+				<div class="flex justify-end mb-4 cursor-pointer">
+					<div class="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
+						<p>Absolutely! Can't wait for our pizza date. 🍕</p>
+					</div>
+					<div class="w-9 h-9 rounded-full flex items-center justify-center ml-2">
+						<img src="https://placehold.co/200x/b7a8ff/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="My Avatar" class="w-8 h-8 rounded-full"/>
+					</div>
+				</div>
+				<!-- Incoming Message -->
+				<div class="flex mb-4 cursor-pointer">
+					<div class="w-9 h-9 rounded-full flex items-center justify-center mr-2">
+						<img src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="User Avatar" class="w-8 h-8 rounded-full"/>
+					</div>
+					<div class="flex max-w-96 bg-white rounded-lg p-3 gap-3">
+						<p class="text-gray-700">Hoorayy!!</p>
+					</div>
+				</div>
+			</div>
+			<!-- Chat Input -->
+			<footer class="bg-white border-t border-gray-300 p-4 absolute bottom-0 w-3/4">
+				<div class="flex items-center">
+					<input type="text" placeholder="Type a message..." class="w-full p-2 rounded-md border border-gray-400 focus:outline-none focus:border-blue-500"/>
+					<button class="bg-indigo-500 text-white px-4 py-2 rounded-md ml-2">Send</button>
+				</div>
+			</footer>
+		</div>
+	</div>
 }
