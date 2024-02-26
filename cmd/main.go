@@ -4,7 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/koioannis/chatter/internal/app/handlers"
+	"github.com/koioannis/chatter/internal/adapters/http/handlers"
+	"github.com/koioannis/chatter/internal/adapters/store"
+	"github.com/koioannis/chatter/internal/core/services"
 	"github.com/koioannis/chatter/pkg/logging"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -50,6 +52,8 @@ func main() {
 		),
 		handlers.Module,
 		logging.Module,
+		store.Module,
+		services.Module,
 		fx.WithLogger(func(logger *logrus.Logger) fxevent.Logger {
 			return logging.NewLoggerAdapter(logger)
 		}),

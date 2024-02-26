@@ -1,9 +1,9 @@
-package components
+package templates
 
-import "github.com/koioannis/chatter/internal/app/chat"
 import "fmt"
 import "math/rand"
 import "time"
+import "github.com/koioannis/chatter/internal/core/domain"
 
 var placeholderIconColors = []string{
 	"ADD8E6", // Soft Blue
@@ -37,7 +37,7 @@ func getRandomPlaceholderUrl(channelName string) string {
 	return fmt.Sprintf("https://placehold.co/200x/%s/ffffff.svg?text=%s&font=Lato", getRandomColor(placeholderIconColors), firstTwoLetters(channelName))
 }
 
-templ Room(room *chat.Room) {
+templ Room(room *domain.Room) {
 	<div class="flex items-center mb-4 cursor-pointer hover:bg-gray-100 p-2 rounded-md">
 		<div class="w-12 h-12 bg-gray-300 rounded-full mr-3">
 			<img src={ getRandomPlaceholderUrl(room.Name) } alt="User Avatar" class="w-12 h-12 rounded-full"/>
@@ -49,7 +49,7 @@ templ Room(room *chat.Room) {
 	</div>
 }
 
-templ Rooms(rooms []*chat.Room) {
+templ Rooms(rooms []*domain.Room) {
 	<div id="rooms" class="overflow-y-auto h-screen">
 		for _, room := range rooms {
 			@Room(room)

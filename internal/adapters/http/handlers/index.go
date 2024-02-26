@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/koioannis/chatter/internal/web/components"
+	"github.com/koioannis/chatter/internal/adapters/http/templates"
 	"github.com/labstack/echo/v4"
 )
 
@@ -19,5 +19,5 @@ func (h *IndexHandler) get(c echo.Context) error {
 		isLoggedIn = false
 	}
 
-	return components.Index(isLoggedIn).Render(c.Request().Context(), c.Response().Writer)
+	return templates.Index(isLoggedIn).Render(c.Request().Context(), c.Response().Writer)
 }

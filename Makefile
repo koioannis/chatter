@@ -4,6 +4,8 @@ run:
 gen:
 	templ generate
 	./tailwindcss  -i ./static/tailwind.css -o ./static/dist/styles.css
+test:
+	@go test ./...
 
 templ:
 	@templ generate -watch -proxy=http://localhost:3000

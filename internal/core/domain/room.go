@@ -1,4 +1,4 @@
-package chat
+package domain
 
 import "github.com/google/uuid"
 
@@ -12,5 +12,4 @@ func NewRoom(id uuid.UUID, name string) *Room {
 		Id:   id,
 		Name: name,
 	}
-
 }

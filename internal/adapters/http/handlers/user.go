@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/koioannis/chatter/internal/web/components"
+	"github.com/koioannis/chatter/internal/adapters/http/templates"
 	"github.com/labstack/echo/v4"
 )
 
@@ -28,5 +28,5 @@ func (h *UserHandler) login(c echo.Context) error {
 	}
 
 	c.SetCookie(cookie)
-	return components.Home().Render(c.Request().Context(), c.Response().Writer)
+	return templates.Home().Render(c.Request().Context(), c.Response().Writer)
 }
