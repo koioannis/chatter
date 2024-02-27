@@ -19,5 +19,9 @@ func (h *IndexHandler) get(c echo.Context) error {
 		isLoggedIn = false
 	}
 
-	return templates.Index(isLoggedIn).Render(c.Request().Context(), c.Response().Writer)
+	if isLoggedIn {
+		return render(templates.Home(), c)
+	}
+
+	return render(templates.Login(), c)
 }
