@@ -57,10 +57,15 @@ templ Rooms(rooms []*domain.Room) {
 	</div>
 }
 
-templ AddRoomModal() {
-	<div id="modal" class="z-10 w-56 p-3 bg-white rounded-lg shadow bg-gray-700 absolute right-0 top-10">
+templ AddRoomModal(err error) {
+	<div id="add-room-modal" class="z-10 w-56 p-3 bg-white rounded-lg shadow bg-gray-700 absolute right-0 top-10">
 		<form hx-post="/room" hx-target="#rooms" hx-swap="afterbegin" method="post">
-			<input type="text" name="name" placeholder="Enter Room name" class="text-black w-full p-2 rounded-md border border-gray-400 focus:outline-none focus:border-blue-500"/>
+			if err == nil {
+				<input type="text" name="name" placeholder="Enter Room name" class="text-black w-full p-2 rounded-md border border-gray-600 focus:outline-none focus:border-blue-500"/>
+			} else {
+				<div class="text-sm text-black">{ err.Error() }</div>
+				<input type="text" name="name" placeholder="Enter Room name" class="text-black w-full p-2 rounded-md border border-red-600"/>
+			}
 			<div class="flex space-x-5 mt-2 space-between">
 				<button
 					type="submit"
@@ -69,7 +74,7 @@ templ AddRoomModal() {
 					Add
 				</button>
 				<button
-					_="on click remove #modal"
+					_="on click remove #add-room-modal"
 					type="button"
 					class="p-2 bg-red-500 rounded-md border border-gray-400 focus:outline-none focus:border-blue-500"
 				>Close</button>
@@ -94,7 +99,6 @@ templ Home() {
 						hx-target="#modals-here"
 						hx-swap="innerHTML"
 						class="uk-button uk-button-primary"
-						_="on htmx:afterOnLoad wait 10ms then add .uk-open to #modal"
 					>+</button>
 					<div id="modals-here"></div>
 				</div>

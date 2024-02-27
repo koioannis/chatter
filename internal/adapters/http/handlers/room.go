@@ -29,14 +29,17 @@ func (h *RoomHandler) create(c echo.Context) error {
 
 	room, err := h.service.Create(req.Name)
 	if err != nil {
-		panic(err)
+		c.Response().Header().Add("HX-Retarget", "#add-room-modal")
+		c.Response().Header().Add("HX-Reswap", "outerHTML")
+		return templates.AddRoomModal(err).Render(c.Request().Context(), c.Response().Writer)
 	}
+
 	return templates.Room(room).Render(c.Request().Context(), c.Response().Writer)
 
 }
 
 func (h *RoomHandler) getCreateRoom(c echo.Context) error {
-	return templates.AddRoomModal().Render(c.Request().Context(), c.Response().Writer)
+	return templates.AddRoomModal(nil).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (h *RoomHandler) get(c echo.Context) error {
