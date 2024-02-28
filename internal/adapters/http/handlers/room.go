@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/koioannis/chatter/internal/adapters/http/templates"
+	"github.com/koioannis/chatter/internal/core/domain"
 	"github.com/koioannis/chatter/internal/core/services"
 	"github.com/labstack/echo/v4"
 )
@@ -29,9 +30,17 @@ func (h *RoomHandler) create(c echo.Context) error {
 
 	room, err := h.service.Create(req.Name)
 	if err != nil {
-		c.Response().Header().Add("HX-Retarget", "#add-room-modal")
 		c.Response().Header().Add("HX-Reswap", "outerHTML")
-		return templates.AddRoomModal(err).Render(c.Request().Context(), c.Response().Writer)
+		switch err {
+		case domain.ErrRoomAlreadyExists:
+			c.Response().WriteHeader(409)
+		case domain.ErrInvalidRoomName:
+			c.Response().WriteHeader(422)
+		default:
+			c.Response().WriteHeader(500)
+		}
+
+		return templates.AddRoomModal(req.Name, err).Render(c.Request().Context(), c.Response().Writer)
 	}
 
 	return templates.Room(room).Render(c.Request().Context(), c.Response().Writer)
@@ -39,7 +48,7 @@ func (h *RoomHandler) create(c echo.Context) error {
 }
 
 func (h *RoomHandler) getCreateRoom(c echo.Context) error {
-	return templates.AddRoomModal(nil).Render(c.Request().Context(), c.Response().Writer)
+	return templates.AddRoomModal("", nil).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (h *RoomHandler) get(c echo.Context) error {

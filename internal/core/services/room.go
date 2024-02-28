@@ -1,8 +1,6 @@
 package services
 
 import (
-	"errors"
-
 	"github.com/google/uuid"
 	"github.com/koioannis/chatter/internal/core/domain"
 	"github.com/koioannis/chatter/internal/ports/store"
@@ -33,11 +31,14 @@ func (s *RoomService) Create(name string) (*domain.Room, error) {
 	}
 
 	if room != nil {
-		return nil, errors.New("room with that name already exists")
+		return nil, domain.ErrRoomAlreadyExists
 	}
 
-	s.logger.Info("Hi")
-	room = domain.NewRoom(uuid.New(), name)
+	room, err = domain.NewRoom(uuid.New(), name)
+	if err != nil {
+		return nil, err
+	}
+
 	if err := s.repo.Create(room); err != nil {
 		return nil, err
 	}

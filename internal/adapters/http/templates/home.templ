@@ -3,7 +3,9 @@ package templates
 import "fmt"
 import "math/rand"
 import "time"
+import "golang.org/x/text/cases"
 import "github.com/koioannis/chatter/internal/core/domain"
+import "strings"
 
 var placeholderIconColors = []string{
 	"ADD8E6", // Soft Blue
@@ -57,16 +59,25 @@ templ Rooms(rooms []*domain.Room) {
 	</div>
 }
 
-templ AddRoomModal(err error) {
+templ AddRoomModal(value string, err error) {
 	<div id="add-room-modal" class="z-10 w-56 p-3 bg-white rounded-lg shadow bg-gray-700 absolute right-0 top-10">
-		<form hx-post="/room" hx-target="#rooms" hx-swap="afterbegin" method="post">
+		<form
+			hx-post="/room"
+			hx-target="#rooms"
+			hx-swap="afterbegin"
+			hx-target-error="#add-room-modal"
+			method="post"
+			_="on htmx:afterRequest if event.detail.xhr.status == 200 remove #add-room-modal"
+		>
 			if err == nil {
 				<input type="text" name="name" placeholder="Enter Room name" class="text-black w-full p-2 rounded-md border border-gray-600 focus:outline-none focus:border-blue-500"/>
 			} else {
-				<div class="text-sm text-black">{ err.Error() }</div>
-				<input type="text" name="name" placeholder="Enter Room name" class="text-black w-full p-2 rounded-md border border-red-600"/>
+				<input value={ value } type="text" name="name" placeholder="Enter Room name" class="text-black w-full p-2 rounded-md border border-red-600"/>
+				<span class="mt-2 t-sm text-red-500 peer-[&:not(:placeholder-shown):not(:focus):invalid]:block">
+					{ strings.Title(err.Error()) }
+				</span>
 			}
-			<div class="flex space-x-5 mt-2 space-between">
+			<div id="foo" class="flex space-x-5 mt-2 space-between">
 				<button
 					type="submit"
 					class="p-2 bg-blue-500 grow rounded-md border border-gray-400 focus:outline-none focus:border-blue-500"
@@ -190,7 +201,7 @@ templ Chat() {
 
 templ Home() {
 	<!-- component -->
-	<div class="flex h-screen overflow-hidden">
+	<div class="flex h-screen overflow-hidden" hx-ext="response-targets">
 		<!-- Sidebar -->
 		<div class="w-1/4 bg-white border-r border-gray-300">
 			<!-- Sidebar Header -->
