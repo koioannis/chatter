@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/koioannis/chatter/internal/adapters/http/handlers"
+	"github.com/koioannis/chatter/internal/adapters/http"
 	"github.com/koioannis/chatter/internal/adapters/store"
 	"github.com/koioannis/chatter/internal/core/services"
 	"github.com/koioannis/chatter/pkg/logging"
@@ -50,7 +50,7 @@ func main() {
 				})
 			},
 		),
-		handlers.Module,
+		http.Module,
 		logging.Module,
 		store.Module,
 		services.Module,
