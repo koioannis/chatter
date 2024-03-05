@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"github.com/koioannis/chatter/internal/adapters/http/templates"
 	"github.com/labstack/echo/v4"
 )
 
@@ -20,8 +19,10 @@ func (h *IndexHandler) get(c echo.Context) error {
 	}
 
 	if isLoggedIn {
-		return render(templates.Home(), c)
+		c.Redirect(302, "/home")
+	} else {
+		c.Redirect(302, "/login")
 	}
 
-	return render(templates.Login(), c)
+	return nil
 }

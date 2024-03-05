@@ -4,6 +4,7 @@ import "fmt"
 import "math/rand"
 import "github.com/koioannis/chatter/internal/core/domain"
 import "strings"
+import "github.com/koioannis/chatter/internal/adapters/http/auth"
 
 var placeholderIconColors = []string{
 	"ADD8E6", // Soft Blue
@@ -100,7 +101,7 @@ templ Chat() {
 				<img src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="User Avatar" class="w-8 h-8 rounded-full"/>
 			</div>
 			<div class="flex max-w-96 bg-white rounded-lg p-3 gap-3">
-				<p class="text-gray-700">Hey Bob, how's it going?</p>
+				<p class="text-gray-700">{ auth.GetCurrentUser(ctx) }</p>
 			</div>
 		</div>
 		<!-- Outgoing Message -->
@@ -203,12 +204,12 @@ templ Home() {
 		<div class="w-1/4 bg-white border-r border-gray-300">
 			<!-- Sidebar Header -->
 			<header class="p-4 border-b border-gray-300 flex justify-between items-center bg-indigo-600 text-white">
-				<h1 class="text-2xl font-semibold">Chatter</h1>
+				<h1 class="text-2xl font-semibold">Chatter - { auth.GetCurrentUser(ctx) }</h1>
 				<div class="relative">
 					<button
 						class="text-xl"
 						id="showButton"
-						hx-get="/room/get-create"
+						hx-get="/room/create"
 						hx-target="#modals-here"
 						hx-swap="innerHTML"
 						class="uk-button uk-button-primary"

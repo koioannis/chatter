@@ -7,14 +7,30 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+var cookieName = "username"
+
 type UserHandler struct{}
 
 func RegisterUserHandler(e *echo.Echo) {
 	h := &UserHandler{}
 	e.POST("/login", h.login)
+	e.GET("/login", h.getLogin)
+}
+
+func (h *UserHandler) getLogin(c echo.Context) error {
+
+	_, err := c.Cookie(cookieName)
+	if err == nil {
+		c.Response().Header().Set("Location", "/home")
+		c.Response().WriteHeader(302)
+		return render(templates.Home(), c)
+	}
+
+	return render(templates.Login(), c)
 }
 
 func (h *UserHandler) login(c echo.Context) error {
+
 	req := struct {
 		Username string `form:"username"`
 	}{}
@@ -23,7 +39,7 @@ func (h *UserHandler) login(c echo.Context) error {
 	}
 
 	cookie := &http.Cookie{
-		Name:  "username",
+		Name:  cookieName,
 		Value: req.Username,
 	}
 

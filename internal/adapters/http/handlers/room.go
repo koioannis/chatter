@@ -1,8 +1,7 @@
 package handlers
 
 import (
-	"fmt"
-
+	"github.com/koioannis/chatter/internal/adapters/http/auth"
 	"github.com/koioannis/chatter/internal/adapters/http/templates"
 	"github.com/koioannis/chatter/internal/core/domain"
 	"github.com/koioannis/chatter/internal/core/services"
@@ -14,14 +13,14 @@ type RoomHandler struct {
 }
 
 func RegisterRoomHandler(e *echo.Echo, service *services.RoomService) {
-	g := e.Group("/room", DummyAuth)
+	g := e.Group("/room", auth.DummyAuth)
 
 	h := &RoomHandler{
 		service: service,
 	}
 	g.GET("", h.get)
 	g.POST("", h.create)
-	g.GET("/get-create", h.getCreateRoom)
+	g.GET("/create", h.getCreateRoom)
 }
 
 func (h *RoomHandler) create(c echo.Context) error {
@@ -57,7 +56,5 @@ func (h *RoomHandler) getCreateRoom(c echo.Context) error {
 
 func (h *RoomHandler) get(c echo.Context) error {
 	rooms := h.service.GetAll()
-	username := c.Get("username").(string)
-	fmt.Println(username, "here")
 	return templates.Rooms(rooms).Render(c.Request().Context(), c.Response().Writer)
 }
