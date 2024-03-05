@@ -10,7 +10,8 @@ import (
 
 func TestInMemoryRoomRepository(t *testing.T) {
 	r := NewInMemoryRoomRepository()
-	room := domain.NewRoom(uuid.New(), "foo")
+	room, err := domain.NewRoom(uuid.New(), "foo")
+	assert.Nil(t, err)
 	r.Create(room)
 
 	actualRoom, err := r.Get(room.Name)
