@@ -23,10 +23,10 @@ func (h *UserHandler) getLogin(c echo.Context) error {
 	if err == nil {
 		c.Response().Header().Set("Location", "/home")
 		c.Response().WriteHeader(302)
-		return render(templates.Home(), c)
+		return renderWithIndex(templates.Home(), c)
 	}
 
-	return render(templates.Login(), c)
+	return renderWithIndex(templates.Login(), c)
 }
 
 func (h *UserHandler) login(c echo.Context) error {

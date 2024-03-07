@@ -10,4 +10,5 @@ var Module = fx.Module("handlers",
 	fx.Invoke(handlers.RegisterUserHandler),
 	fx.Invoke(handlers.RegisterRoomHandler),
 	fx.Invoke(handlers.RegisterHomeHandler),
+	fx.Invoke(handlers.RegisterMessageHandler),
 )

@@ -12,4 +12,10 @@ var Module = fx.Module("persistance",
 			fx.As(new(ports.RoomRepository)),
 		),
 	),
+	fx.Provide(
+		fx.Annotate(
+			NewInMemoryMessageRepository,
+			fx.As(new(ports.MessageRepository)),
+		),
+	),
 )

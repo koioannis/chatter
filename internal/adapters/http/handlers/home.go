@@ -17,5 +17,5 @@ func RegisterHomeHandler(e *echo.Echo) {
 }
 
 func (h *HomeHandler) get(c echo.Context) error {
-	return render(templates.Home(), c)
+	return renderWithIndex(templates.Home(), c)
 }

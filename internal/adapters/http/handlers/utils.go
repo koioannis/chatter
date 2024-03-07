@@ -7,5 +7,10 @@ import (
 )
 
 func render(component templ.Component, ctx echo.Context) error {
+	return component.Render(ctx.Request().Context(), ctx.Response().Writer)
+
+}
+
+func renderWithIndex(component templ.Component, ctx echo.Context) error {
 	return templates.Index().Render(templ.WithChildren(ctx.Request().Context(), component), ctx.Response().Writer)
 }
