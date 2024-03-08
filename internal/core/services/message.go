@@ -19,23 +19,23 @@ func NewMessageService(message_repo store.MessageRepository, room_repo store.Roo
 	}
 }
 
-func (m *MessageService) Create(createMessageDto dto.CreateMessageDTO) (string, error) {
+func (m *MessageService) Create(createMessageDto dto.CreateMessageDTO) (*domain.Message, error) {
 	room, err := m.room_repo.GetById(createMessageDto.RoomId())
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if room == nil {
-		return "", domain.ErrRoomDoesNotExist
+		return nil, domain.ErrRoomDoesNotExist
 
 	}
 
 	message, err := domain.NewMessage(uuid.New(), createMessageDto.Sender(), createMessageDto.RoomId(), createMessageDto.Content())
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	err = m.message_repo.Create(message)
-	return "", err
+	return message, err
 }
 
 func (m *MessageService) GetAllByRoomId(roomId uuid.UUID) ([]*domain.Message, error) {

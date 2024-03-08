@@ -8,6 +8,14 @@ type CreateMessageDTO struct {
 	roomId  uuid.UUID
 }
 
+func NewCreateMessageDTO(content string, sender string, roomId uuid.UUID) CreateMessageDTO {
+	return CreateMessageDTO{
+		content: content,
+		sender:  sender,
+		roomId:  roomId,
+	}
+}
+
 func (dto CreateMessageDTO) Content() string {
 	return dto.content
 }

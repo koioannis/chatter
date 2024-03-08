@@ -45,3 +45,11 @@ func (s *RoomService) Create(name string) (*domain.Room, error) {
 
 	return room, nil
 }
+
+func (s *RoomService) GetById(id uuid.UUID) (*domain.Room, error) {
+	room, err := s.repo.GetById(id)
+	if err != nil {
+		return nil, err
+	}
+	return room, nil
+}
