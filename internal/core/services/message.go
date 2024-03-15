@@ -1,26 +1,34 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/koioannis/chatter/internal/core/domain"
 	"github.com/koioannis/chatter/internal/dto"
+	"github.com/koioannis/chatter/internal/ports/events"
 	"github.com/koioannis/chatter/internal/ports/store"
+	"github.com/sirupsen/logrus"
 )
 
 type MessageService struct {
-	message_repo store.MessageRepository
-	room_repo    store.RoomRepository
+	messageRepo  store.MessageRepository
+	roomRepo     store.RoomRepository
+	msgPublisher events.MessagePublisher
+	logger       *logrus.Logger
 }
 
-func NewMessageService(message_repo store.MessageRepository, room_repo store.RoomRepository) *MessageService {
+func NewMessageService(messageRepo store.MessageRepository, roomRepo store.RoomRepository, msgPublisher events.MessagePublisher, logger *logrus.Logger) *MessageService {
 	return &MessageService{
-		message_repo: message_repo,
-		room_repo:    room_repo,
+		messageRepo:  messageRepo,
+		roomRepo:     roomRepo,
+		msgPublisher: msgPublisher,
+		logger:       logger,
 	}
 }
 
 func (m *MessageService) Create(createMessageDto dto.CreateMessageDTO) (*domain.Message, error) {
-	room, err := m.room_repo.GetById(createMessageDto.RoomId())
+	room, err := m.roomRepo.GetById(createMessageDto.RoomId())
 	if err != nil {
 		return nil, err
 	}
@@ -33,11 +41,18 @@ func (m *MessageService) Create(createMessageDto dto.CreateMessageDTO) (*domain.
 	if err != nil {
 		return nil, err
 	}
-
-	err = m.message_repo.Create(message)
+	err = m.messageRepo.Create(message)
+	go m.publishMessage(message)
 	return message, err
 }
 
+func (m *MessageService) publishMessage(msg *domain.Message) {
+	fmt.Println("Publishing from sevice")
+	if err := m.msgPublisher.Publish(msg); err != nil {
+		m.logger.Error(err)
+	}
+}
+
 func (m *MessageService) GetAllByRoomId(roomId uuid.UUID) ([]*domain.Message, error) {
-	return m.message_repo.GetAllByRoomId(roomId)
+	return m.messageRepo.GetAllByRoomId(roomId)
 }

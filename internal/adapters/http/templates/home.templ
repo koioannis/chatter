@@ -142,7 +142,7 @@ templ Messages(messages []*domain.Message, includeOOB bool) {
 
 templ Chat(room *domain.Room, messages []*domain.Message) {
 	<!-- Chat Messages -->
-	<div class="h-screen" hx-ext="ws" ws-connect="/ws">
+	<div class="h-screen" hx-ext="ws" ws-connect={ fmt.Sprintf("/messages/ws/%s", room.Id) }>
 		@ChatHeader(room.Name)
 		@Messages(messages, false)
 		<!-- Chat Input -->
@@ -152,8 +152,9 @@ templ Chat(room *domain.Room, messages []*domain.Message) {
 				hx-target="#messages"
 				hx-swap="beforeend"
 				class="flex items-center"
+				_="on htmx:afterRequest reset() me"
 			>
-				<input type="text" name="message" placeholder="Type a message..." class="w-full p-2 rounded-md border border-gray-400 focus:outline-none focus:border-blue-500"/>
+				<input type="text" name="message" id="message-input" placeholder="Type a message..." class="w-full p-2 rounded-md border border-gray-400 focus:outline-none focus:border-blue-500"/>
 				<button
 					id="submit-message-btn"
 					type="submit"
