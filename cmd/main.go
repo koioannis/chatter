@@ -2,12 +2,17 @@ package main
 
 import (
 	"context"
-	"time"
+	"fmt"
+	_ "net/http/pprof"
+	"runtime"
+
+	nethttp "net/http"
 
 	"github.com/koioannis/chatter/internal/adapters/events"
 	"github.com/koioannis/chatter/internal/adapters/http"
 	"github.com/koioannis/chatter/internal/adapters/store"
 	"github.com/koioannis/chatter/internal/core/services"
+	"github.com/koioannis/chatter/internal/serialization"
 	"github.com/koioannis/chatter/pkg/logging"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -34,6 +39,7 @@ func main() {
 					},
 				}))
 				e.Static("/static", "static/dist")
+				e.GET("/debug/*", echo.WrapHandler(nethttp.DefaultServeMux))
 
 				return e
 			},
@@ -42,11 +48,13 @@ func main() {
 			func(lc fx.Lifecycle, e *echo.Echo) {
 				lc.Append(fx.Hook{
 					OnStart: func(ctx context.Context) error {
+
 						go e.Start(":3000")
 						return nil
 					},
 					OnStop: func(ctx context.Context) error {
-						return e.Shutdown(ctx)
+						err := e.Shutdown(ctx)
+						return err
 					},
 				})
 			},
@@ -56,12 +64,14 @@ func main() {
 		store.Module,
 		services.Module,
 		events.Module,
+		serialization.Module,
 		fx.WithLogger(func(logger *logrus.Logger) fxevent.Logger {
 			return logging.NewLoggerAdapter(logger)
 		}),
 	)
 
 	app.Run()
-
-	time.Sleep(time.Second * 2)
+	var stats runtime.MemStats
+	runtime.ReadMemStats(&stats)
+	fmt.Printf("Number of Goroutines: %d\n", runtime.NumGoroutine())
 }

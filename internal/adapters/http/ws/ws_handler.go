@@ -2,7 +2,6 @@ package ws
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/koioannis/chatter/internal/adapters/http/auth"
@@ -38,7 +37,7 @@ func (h *WsHandler) OnNewConn(c echo.Context) error {
 		go func() {
 			for {
 				select {
-				case msg := <-h.subscriber.Subscribe(roomUUID):
+				case msg := <-h.subscriber.Subscribe(roomUUID, username):
 					if msg.Sender == username {
 						continue
 					}
@@ -47,7 +46,7 @@ func (h *WsHandler) OnNewConn(c echo.Context) error {
 						return
 					}
 				case <-ctx.Done():
-					fmt.Println("closing write!")
+					h.subscriber.Unsubscribe(roomUUID, username)
 					return
 				}
 			}

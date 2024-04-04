@@ -133,6 +133,11 @@ templ Messages(messages []*domain.Message, includeOOB bool) {
 		if includeOOB {
 			hx-swap-oob="beforeend"
 		}
+		_="
+		on load set my scrollTop to my scrollHeight end
+		on htmx:afterSettle set my scrollTop to my scrollHeight end
+		on htmx:oobAfterSwap set my scrollTop to my scrollHeight end
+		"
 	>
 		for _, m := range messages {
 			@Message(m)
@@ -142,7 +147,11 @@ templ Messages(messages []*domain.Message, includeOOB bool) {
 
 templ Chat(room *domain.Room, messages []*domain.Message) {
 	<!-- Chat Messages -->
-	<div class="h-screen" hx-ext="ws" ws-connect={ fmt.Sprintf("/messages/ws/%s", room.Id) }>
+	<div
+		class="h-screen"
+		hx-ext="ws"
+		ws-connect={ fmt.Sprintf("/messages/ws/%s", room.Id) }
+	>
 		@ChatHeader(room.Name)
 		@Messages(messages, false)
 		<!-- Chat Input -->

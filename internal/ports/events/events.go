@@ -6,9 +6,10 @@ import (
 )
 
 type MessagePublisher interface {
-	Publish(*domain.Message) error
+	Publish(message *domain.Message) error
 }
 
 type MessageSubscriber interface {
-	Subscribe(roomID uuid.UUID) <-chan *domain.Message
+	Subscribe(roomID uuid.UUID, clientID string) <-chan *domain.Message
+	Unsubscribe(roomID uuid.UUID, clientID string)
 }

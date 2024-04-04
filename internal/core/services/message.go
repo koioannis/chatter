@@ -1,8 +1,6 @@
 package services
 
 import (
-	"fmt"
-
 	"github.com/google/uuid"
 	"github.com/koioannis/chatter/internal/core/domain"
 	"github.com/koioannis/chatter/internal/dto"
@@ -47,7 +45,6 @@ func (m *MessageService) Create(createMessageDto dto.CreateMessageDTO) (*domain.
 }
 
 func (m *MessageService) publishMessage(msg *domain.Message) {
-	fmt.Println("Publishing from sevice")
 	if err := m.msgPublisher.Publish(msg); err != nil {
 		m.logger.Error(err)
 	}
