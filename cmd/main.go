@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
 	_ "net/http/pprof"
-	"runtime"
 
 	nethttp "net/http"
 
@@ -48,7 +46,6 @@ func main() {
 			func(lc fx.Lifecycle, e *echo.Echo) {
 				lc.Append(fx.Hook{
 					OnStart: func(ctx context.Context) error {
-
 						go e.Start(":3000")
 						return nil
 					},
@@ -71,7 +68,4 @@ func main() {
 	)
 
 	app.Run()
-	var stats runtime.MemStats
-	runtime.ReadMemStats(&stats)
-	fmt.Printf("Number of Goroutines: %d\n", runtime.NumGoroutine())
 }

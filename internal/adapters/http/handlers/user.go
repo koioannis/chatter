@@ -18,7 +18,6 @@ func RegisterUserHandler(e *echo.Echo) {
 }
 
 func (h *UserHandler) getLogin(c echo.Context) error {
-
 	_, err := c.Cookie(cookieName)
 	if err == nil {
 		c.Response().Header().Set("Location", "/home")
@@ -30,7 +29,6 @@ func (h *UserHandler) getLogin(c echo.Context) error {
 }
 
 func (h *UserHandler) login(c echo.Context) error {
-
 	req := struct {
 		Username string `form:"username"`
 	}{}
@@ -44,5 +42,6 @@ func (h *UserHandler) login(c echo.Context) error {
 	}
 
 	c.SetCookie(cookie)
-	return templates.Home().Render(c.Request().Context(), c.Response().Writer)
+	c.Redirect(302, "/home")
+	return nil
 }

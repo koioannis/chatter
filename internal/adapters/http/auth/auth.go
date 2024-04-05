@@ -10,6 +10,10 @@ type key string
 
 var usernameKey = key("username")
 
+func NewContext(ctx context.Context, username string) context.Context {
+	return context.WithValue(ctx, usernameKey, username)
+}
+
 func GetCurrentUser(c context.Context) string {
 	val := c.Value(usernameKey)
 	if val == nil {
@@ -27,11 +31,9 @@ func DummyAuth(next echo.HandlerFunc) echo.HandlerFunc {
 			return nil
 		}
 
-		c.Set("username", cookie.Value)
-
 		c.SetRequest(
 			c.Request().WithContext(
-				context.WithValue(c.Request().Context(), usernameKey, cookie.Value),
+				NewContext(c.Request().Context(), cookie.Value),
 			),
 		)
 		return next(c)

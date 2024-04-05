@@ -6,17 +6,6 @@ import "github.com/koioannis/chatter/internal/core/domain"
 import "strings"
 import "github.com/koioannis/chatter/internal/adapters/http/auth"
 
-var placeholderIconColors = []string{
-	"ADD8E6", // Soft Blue
-	"B2F2BB", // Pastel Green
-	"E6E6FA", // Lavender
-	"FFE5B4", // Peach
-	"87CEEB", // Sky Blue
-	"98FF98", // Mint Green
-	"FADADD", // Powder Pink
-	"D3D3D3", // Light Grey
-}
-
 func getRandomColor(colors []string) string {
 	index := rand.Intn(len(colors))
 	return colors[index]
@@ -34,7 +23,7 @@ func firstTwoLetters(s string) string {
 }
 
 func getRandomPlaceholderUrl(channelName string) string {
-	return fmt.Sprintf("https://placehold.co/200x/%s/ffffff.svg?text=%s&font=Lato", getRandomColor(placeholderIconColors), firstTwoLetters(channelName))
+	return fmt.Sprintf("https://placehold.co/200x/ADD8E6/ffffff.svg?text=%s&font=Lato", firstTwoLetters(channelName))
 }
 
 templ Room(room *domain.Room) {
@@ -182,7 +171,7 @@ templ Home() {
 		<div class="w-1/4 bg-white border-r border-gray-300">
 			<!-- Sidebar Header -->
 			<header class="p-4 border-b border-gray-300 flex justify-between items-center bg-indigo-600 text-white">
-				<h1 class="text-2xl font-semibold">Chatter - { auth.GetCurrentUser(ctx) }</h1>
+				<h1 class="text-2xl font-semibold">{ auth.GetCurrentUser(ctx) }</h1>
 				<div class="relative">
 					<button
 						class="text-xl"
