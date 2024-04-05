@@ -1,8 +1,6 @@
 .vscode
-.env.local.*
 *_templ.go
 *_templ.txt
-node_modules
 tailwindcss
 tmp
 static/dist

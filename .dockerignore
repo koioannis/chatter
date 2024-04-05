@@ -1,0 +1,5 @@
+**/*_templ.go
+static/dist
+tailwindcss
+.vscode
+tmp
