@@ -2,7 +2,7 @@
 
 This project is a full-stack chat application built as a sandbox for exploring and learning various technologies and architectural patterns. The core stack includes Go, HTMX, and Apache Kafka as a message broker.
 
-The application is designed as a single-process where Kafka is utilized not out of necessity but for educational exploration.
+The application is designed as a single-binary where Kafka is utilized not out of necessity but for educational exploration.
 
 ## Overview
 
